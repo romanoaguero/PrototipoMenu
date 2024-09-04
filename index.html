@@ -10,27 +10,31 @@
     <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
     <link rel="stylesheet" href="css/qgis2web.css">
     <link rel="stylesheet" href="css/fontawesome-all.min.css">
-    <style>
+    
 
+<style>
 /* Importa la fuente Poppins desde Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
- #map {
+#map {
     width: 100%;
-    height: 100vh;
+            height: 100vh; /* Altura completa de la ventana */
+            margin: 0;
+            padding: 0;
 }
 
 body {
+
+    height: 100%;
+    margin: 0;
     font-family: 'Poppins', sans-serif; /* Aplica la fuente al cuerpo del documento */
 }
 
-/* imagen de expansion del panel  */
-#expandIcon
-{
+/* Imagen de expansión del panel */
+#expandIcon {
     width: 50px; /* Ancho cuando está contraído */
     height: 50px; /* Alto cuando está contraído */
-    padding:5px; /* bordes */
-    
+    padding: 5px; /* Bordes */
 }
 
 /* Panel flotante con efecto 3D y degradado */
@@ -45,15 +49,21 @@ body {
     border-radius: 12px;
     overflow: hidden;
     z-index: 1000;
-    transition: width 0.4s ease, height 0.4s ease, box-shadow 0.4s ease;
+    transition: width 0.4s ease, height 0.2s ease, box-shadow 0.4s ease;
     font-family: 'Poppins', sans-serif; /* Aplica la fuente al panel flotante */
 }
 
 .floating-panel.expanded {
-    overflow-y: auto;
     width: 300px; /* Ancho cuando está expandido */
     height: 570px; /* Alto cuando está expandido */
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -10px -10px 20px rgba(255, 255, 255, 0.9); /* Sombra más pronunciada */
+    overflow: hidden; /* Ocultar el desbordamiento general */
+}
+
+/* Contenedor para el contenido con scroll */
+.accordion-content {
+    height: calc(100% - 42px); /* Restar el alto del botón de colapso */
+    overflow-y: auto; 
 }
 
 /* Botones del acordeón con efecto 3D y degradado */
@@ -93,7 +103,7 @@ body {
     border-radius: 0;
     box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -4px -4px 8px rgba(255, 255, 255, 0.5); /* Sombra interna */
     font-size: 14px;
-}   
+}
 
 .floating-panel.expanded .panel {
     display: block; /* Mostrar cuando esté expandido */
@@ -108,8 +118,8 @@ body {
 #collapseButton {
     display: block;
     width: 100%;
-    padding: 20px;
-    height: 20px; /* Alto  */
+    padding: 10px;
+    height: 40px; /* Alto */
     background: linear-gradient(145deg, #333, #000); /* Degradado del botón de colapso */
     color: #fff;
     border: none;
@@ -140,23 +150,22 @@ body {
 #collapseButton span {
     display: inline-block;
     transition: transform 0.5s ease; /* Mayor duración de la animación */
-    font-size: 30px; /* Tamaño del simbolo reducido */
+    font-size: 30px; /* Tamaño del símbolo reducido */
     position: relative;
     top: -1px; /* Mueve el símbolo 2px hacia arriba */
 }
 
 #collapseButton:hover span {
     transform: translateX(15px); /* Mayor desplazamiento del símbolo */
-    
 }
 
 /* Estilo mejorado para el scrollbar */
-.floating-panel.expanded::-webkit-scrollbar {
+.floating-panel.expanded .accordion-content::-webkit-scrollbar {
     width: 18px; /* Scrollbar más ancho */
     background: linear-gradient(145deg, #dcdcdc, #f0f0f0); /* Degradado del fondo del scrollbar */
 }
 
-.floating-panel.expanded::-webkit-scrollbar-thumb {
+.floating-panel.expanded .accordion-content::-webkit-scrollbar-thumb {
     background: linear-gradient(145deg, #0056b3, #003580); /* Degradado de la thumb */
     border-radius: 9px;
     border: 4px solid #f0f0f0; /* Espacio alrededor de la thumb */
@@ -164,13 +173,12 @@ body {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.floating-panel.expanded::-webkit-scrollbar-thumb:active {
+.floating-panel.expanded .accordion-content::-webkit-scrollbar-thumb:active {
     background: linear-gradient(145deg, #003580, #00214f); /* Degradado más oscuro al hacer clic */
     box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7), 0 6px 12px rgba(0, 0, 0, 0.6); /* Sombra más pronunciada */
     transform: scale(1.1); /* Aumenta ligeramente el tamaño al hacer clic */
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
-
     </style>
     <title>Leaflet Map with Floating Accordion Control</title>
 </head>
@@ -187,178 +195,181 @@ body {
         </div>  
 
 
-
-        <!-- Resto del contenido del panel flotante -->
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
-        <button class="accordion">
-            <div class="accordion-header" id="accordionHeader" >
-                <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
-                <span>Grupo 1 </span> 
-                
-            </div>
-        </button>
-        <div class="panel" data-group="group1">
-            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
-            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
-        </div>
-
     
+        <!-- Resto del contenido del panel flotante -->
 
-
-        <button class="accordion">
+        <div class="accordion-content">   <!-- div que separa el contenido del boton -->
+        <button class="accordion">  
             <div class="accordion-header">
                 <i class="fas fa-caret-down icon"></i>
-                <label><input type="checkbox" class="group-checkbox" data-group="group2"></label> 
+                <label><input type="checkbox" class="group-checkbox" data-group="CapaBase"></label> 
                 <span> Capas Bases </span>   
             </div>
         </button>
         
-        <div class="panel" data-group="group2">
+        <div class="panel" data-group="CapaBase">
             <label><input type="checkbox" id="layer_GoogleHybrid_1"> Google Hybrid</label>
+            <label><input type="checkbox" id="layer_GoogleSatellite_1"> Google Satellite</label>
             <label><input type="checkbox" id="layer_GoogleRoad_0"> Google Road</label>
         </div>
+
+       
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+        <button class="accordion">
+            <div class="accordion-header" id="accordionHeader" >
+                <i class="fas fa-caret-down icon"></i>
+                <label><input type="checkbox" class="group-checkbox" data-group="group1"></label>
+                <span>Grupo 1 </span> 
+                
+            </div>
+        </button>
+        <div class="panel" data-group="group1">
+            <label><input type="checkbox" id="layer_100EscAgricult_3"> 100 - Esc Agricult</label>
+            <label><input type="checkbox" id="layer_Linea100SanPablo_2"> Linea 100 - San Pablo</label>
+        </div>
+
+    </div>
         
     </div>
 
@@ -376,10 +387,14 @@ body {
     <script src="data/100EscAgricult_3.js"></script>
     <script>
         var map = L.map('map', {
-            zoomControl: false, maxZoom: 28, minZoom: 1
-        }).fitBounds([[-26.931944613326827, -65.41880471789884], [-26.69494771400776, -65.04966409289884]]);
+            center: [-26.8173, -65.2130],
+            zoom: 13, // Nivel de zoom inicial
+            zoomControl: false, 
+            maxZoom: 30, 
+            minZoom: 1
+        });
         var hash = new L.Hash(map);
-        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        map.attributionControl.setPrefix('');
         var autolinker = new Autolinker({ truncate: { length: 30, location: 'smart' } });
 
         function removeEmptyRowsFromPopupContent(content, feature) {
@@ -415,12 +430,27 @@ body {
         var bounds_group = new L.featureGroup([]);
         function setBounds() { }
 
+        map.createPane('pane_GoogleSatellite_1');
+        map.getPane('pane_GoogleSatellite_1').style.zIndex = 401;
+        var layer_GoogleSatellite_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatellite_1',
+            opacity: 1.0,
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_GoogleSatellite_1;
+        map.addLayer(layer_GoogleSatellite_1);
+
+       
+
         map.createPane('pane_GoogleRoad_0');
         map.getPane('pane_GoogleRoad_0').style.zIndex = 400;
         var layer_GoogleRoad_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
             pane: 'pane_GoogleRoad_0',
             opacity: 1.0,
-            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            attribution: '',
             minZoom: 1,
             maxZoom: 28,
             minNativeZoom: 0,
@@ -431,10 +461,10 @@ body {
 
         map.createPane('pane_GoogleHybrid_1');
         map.getPane('pane_GoogleHybrid_1').style.zIndex = 401;
-        var layer_GoogleHybrid_1 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        var layer_GoogleHybrid_1 = L.tileLayer('https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i{z}!2i{x}!3i{y}!4i256!2m3!1e0!2sm!3i690435309!3m17!2ses!3sUS!5e18!12m4!1e68!2m2!1sset!2sRoadmap!12m3!1e37!2m1!1ssmartmaps!12m4!1e26!2m2!1sstyles!2zcy5lOmd8cC5jOiMxZDJjNGQscy5lOmwudC5mfHAuYzojOGVjM2I5LHMuZTpsLnQuc3xwLmM6IzFhMzY0NixzLnQ6MTd8cy5lOmcuc3xwLmM6IzRiNjg3OCxzLnQ6MjF8cy5lOmwudC5mfHAuYzojNjQ3NzllLHMudDoxOHxzLmU6Zy5zfHAuYzojNGI2ODc4LHMudDo4MXxzLmU6Zy5zfHAuYzojMzM0ZTg3LHMudDo4MnxzLmU6Z3xwLmM6IzAyM2U1OCxzLnQ6MnxzLmU6Z3xwLmM6IzI4M2Q2YSxzLnQ6MnxzLmU6bC50LmZ8cC5jOiM2ZjliYTUscy50OjJ8cy5lOmwudC5zfHAuYzojMWQyYzRkLHMudDo0MHxzLmU6Zy5mfHAuYzojMDIzZTU4LHMudDo0MHxzLmU6bC50LmZ8cC5jOiMzQzc2ODAscy50OjN8cy5lOmd8cC5jOiMzMDRhN2Qscy50OjN8cy5lOmwudC5mfHAuYzojOThhNWJlLHMudDozfHMuZTpsLnQuc3xwLmM6IzFkMmM0ZCxzLnQ6NDl8cy5lOmd8cC5jOiMyYzY2NzUscy50OjQ5fHMuZTpnLnN8cC5jOiMyNTU3NjMscy50OjQ5fHMuZTpsLnQuZnxwLmM6I2IwZDVjZSxzLnQ6NDl8cy5lOmwudC5zfHAuYzojMDIzZTU4LHMudDo0fHMuZTpsLnQuZnxwLmM6Izk4YTViZSxzLnQ6NHxzLmU6bC50LnN8cC5jOiMxZDJjNGQscy50OjY1fHMuZTpnLmZ8cC5jOiMyODNkNmEscy50OjY2fHMuZTpnfHAuYzojM2E0NzYyLHMudDo2fHMuZTpnfHAuYzojMGUxNjI2LHMudDo2fHMuZTpsLnQuZnxwLmM6IzRlNmQ3MA!4e0', {
             pane: 'pane_GoogleHybrid_1',
             opacity: 1.0,
-            attribution: '<a href="https://www.google.at/permissions/geoguidelines/attr-guide.html">Map data ©2015 Google</a>',
+            attribution: '',
             minZoom: 1,
             maxZoom: 28,
             minNativeZoom: 0,
@@ -442,6 +472,7 @@ body {
         });
         layer_GoogleHybrid_1;
         map.addLayer(layer_GoogleHybrid_1);
+
 
         function pop_Linea100SanPablo_2(feature, layer) {
             var popupContent = '<table>\
@@ -531,7 +562,9 @@ body {
             "layer_100EscAgricult_3": layer_100EscAgricult_3,
             "layer_Linea100SanPablo_2": layer_Linea100SanPablo_2,
             "layer_GoogleHybrid_1": layer_GoogleHybrid_1,
-            "layer_GoogleRoad_0": layer_GoogleRoad_0
+            "layer_GoogleRoad_0": layer_GoogleRoad_0,
+            "layer_GoogleSatellite_1":layer_GoogleSatellite_1
+            
         };
 
   // acordeon y sus funciones
@@ -595,35 +628,138 @@ document.getElementById('expandIcon').addEventListener('click', function() {
     image.style.display = accordionPanel.classList.contains('expanded') ? 'none' : 'block';
 });
 
-// Checkbox 'Select All' en cada grupo
-document.querySelectorAll('input[type="checkbox"].group-checkbox').forEach(checkbox => {
+// Crear un objeto para rastrear el estado de selección de las capas
+const layerSelectionState = {
+  'layer_100EscAgricult_3': false,
+  'layer_Linea100SanPablo_2': false,
+  'layer_GoogleHybrid_1': false,
+  'layer_GoogleRoad_0': false,
+  'layer_GoogleSatellite_1': false
+};
+
+// Manejo de eventos de selección de capas
+document.querySelectorAll('.panel input[type="checkbox"]').forEach(checkbox => {
+  checkbox.addEventListener('change', function() {
+    const layerId = this.id;
+    layerSelectionState[layerId] = this.checked;
+    updateLayerVisibility(layerId, this.checked);
+    updateGroupSelectionState(this.closest('.panel').dataset.group);
+  });
+});
+
+// Actualizar la visibilidad de la capa en el mapa
+function updateLayerVisibility(layerId, visible) {
+  if (visible) {
+    map.addLayer(layers[layerId]);
+  } else {
+    map.removeLayer(layers[layerId]);
+  }
+}
+
+// Actualizar el estado de selección del grupo
+function updateGroupSelectionState(groupName) {
+  const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${groupName}"]`);
+  const layerCheckboxes = document.querySelectorAll(`.panel[data-group="${groupName}"] input[type="checkbox"]`);
+
+  const allChecked = Array.from(layerCheckboxes).every(cb => layerSelectionState[cb.id]);
+  const anyChecked = Array.from(layerCheckboxes).some(cb => layerSelectionState[cb.id]);
+
+  groupCheckbox.checked = allChecked;
+  groupCheckbox.indeterminate = !allChecked && anyChecked;
+}
+
+// Manejo de eventos de selección de grupos
+document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
+  groupCheckbox.addEventListener('change', function() {
+    const groupName = this.dataset.group;
+    const isChecked = this.checked;
+    const layerCheckboxes = document.querySelectorAll(`.panel[data-group="${groupName}"] input[type="checkbox"]`);
+
+    layerCheckboxes.forEach(layerCheckbox => {
+      layerCheckbox.checked = isChecked;
+      layerSelectionState[layerCheckbox.id] = isChecked;
+      updateLayerVisibility(layerCheckbox.id, isChecked);
+    });
+  });
+});
+
+
+// Seleccionar por defecto el checkbox del grupo "CapaBase" y marcar una sola capa dentro de este grupo
+document.querySelector('.group-checkbox[data-group="CapaBase"]').checked = true;
+
+// Marcar una sola capa dentro del grupo "CapaBase"
+let firstLayerChecked = false;
+document.querySelectorAll('.panel[data-group="CapaBase"] input[type="checkbox"]').forEach(checkbox => {
+    if (!firstLayerChecked) {
+        checkbox.checked = true;
+        updateLayerVisibility(checkbox.id, true); // Activar la primera capa
+        firstLayerChecked = true; // Solo activar la primera capa
+    } else {
+        checkbox.checked = false;
+        updateLayerVisibility(checkbox.id, false); // Desactivar las demás capas
+    }
+});
+
+// Función para manejar la selección exclusiva en el grupo "CapaBase"
+document.querySelectorAll('.panel[data-group="CapaBase"] input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', function() {
-        var group = this.getAttribute('data-group');
-        var panel = document.querySelector('.panel[data-group="' + group + '"]');
         if (this.checked) {
-            panel.querySelectorAll('input[type="checkbox"]').forEach(layerCheckbox => {
-                layerCheckbox.checked = true;
-                map.addLayer(layers[layerCheckbox.id]);
+            // Deseleccionar los otros checkboxes dentro del grupo "CapaBase"
+            document.querySelectorAll('.panel[data-group="CapaBase"] input[type="checkbox"]').forEach(otherCheckbox => {
+                if (otherCheckbox !== this) {
+                    otherCheckbox.checked = false;
+                    updateLayerVisibility(otherCheckbox.id, false); // Desactivar capa deseleccionada
+                }
             });
+
+            // Activar la capa seleccionada
+            updateLayerVisibility(this.id, true);
         } else {
-            panel.querySelectorAll('input[type="checkbox"]').forEach(layerCheckbox => {
-                layerCheckbox.checked = false;
-                map.removeLayer(layers[layerCheckbox.id]);
-            });
+            // Si se deselecciona, desactivar la capa correspondiente
+            updateLayerVisibility(this.id, false);
         }
     });
 });
 
-// Maneja los checkbox individuales de las capas
-document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        if (this.checked) {
-            map.addLayer(layers[this.id]);
+// Manejo de eventos de selección de grupos para "CapaBase"
+document.querySelector('.group-checkbox[data-group="CapaBase"]').addEventListener('change', function() {
+    const groupName = this.dataset.group;
+    const isChecked = this.checked;
+    const layerCheckboxes = document.querySelectorAll(`.panel[data-group="${groupName}"] input[type="checkbox"]`);
+
+    // Si se marca el checkbox del grupo, marcar la primera capa del grupo "CapaBase"
+    let firstLayerChecked = false;
+    layerCheckboxes.forEach(layerCheckbox => {
+        if (isChecked && !firstLayerChecked) {
+            layerCheckbox.checked = true;
+            updateLayerVisibility(layerCheckbox.id, true); // Activar la primera capa
+            firstLayerChecked = true;
         } else {
-            map.removeLayer(layers[this.id]);
+            layerCheckbox.checked = false;
+            updateLayerVisibility(layerCheckbox.id, false); // Desactivar las demás capas
         }
     });
 });
+
+// Función para asegurarse de que las capas de los grupos no tildados no estén visibles
+function ensureLayersVisibility() {
+    document.querySelectorAll('.group-checkbox').forEach(groupCheckbox => {
+        const groupName = groupCheckbox.dataset.group;
+        const isChecked = groupCheckbox.checked;
+        const layerCheckboxes = document.querySelectorAll(`.panel[data-group="${groupName}"] input[type="checkbox"]`);
+
+        layerCheckboxes.forEach(layerCheckbox => {
+            if (!isChecked) {
+                // Si el grupo no está tildado, desactivar la capa en el mapa
+                layerCheckbox.checked = false;
+                updateLayerVisibility(layerCheckbox.id, false);
+            }
+        });
+    });
+}
+
+// Ejecuta la función para asegurar la visibilidad correcta al cargar la página
+ensureLayersVisibility();
 
 // Expande o contrae el panel flotante al hacer clic fuera del contenido
 var accordionPanel = document.getElementById('accordionPanel');
@@ -677,4 +813,6 @@ setBounds();
     </script>
 </body>
 </html>
+
+
 
